@@ -21,16 +21,37 @@ npx supabase start          # local Postgres, Auth and Edge Functions
 
 ## Commands
 
-| Command                 | What it does                                        |
-| ----------------------- | --------------------------------------------------- |
-| `npm run web`           | Start the web app in development                    |
-| `npm test`              | Run unit tests (Vitest)                             |
-| `npm run test:db`       | Database tests; needs `npx supabase db start` first |
-| `npm run typecheck`     | TypeScript check                                    |
-| `npm run lint`          | ESLint                                              |
-| `npm run format`        | Format with Prettier                                |
-| `npm run build:web`     | Export the static web build to `dist/`              |
-| `npx supabase db reset` | Recreate the local DB from migrations and seed      |
+| Command                 | What it does                                            |
+| ----------------------- | ------------------------------------------------------- |
+| `npm run web`           | Start the web app in development                        |
+| `npm test`              | Run unit tests (Vitest)                                 |
+| `npm run test:db`       | Database and API tests; need `npx supabase start` first |
+| `npm run typecheck`     | TypeScript check                                        |
+| `npm run lint`          | ESLint                                                  |
+| `npm run format`        | Format with Prettier                                    |
+| `npm run build:web`     | Export the static web build to `dist/`                  |
+| `npx supabase db reset` | Recreate the local DB from migrations and seed          |
+
+## Public API (Edge Functions)
+
+Served locally at `http://127.0.0.1:54321/functions/v1/` by `npx supabase start` (after adding or
+changing a function's config, run `npx supabase functions serve`).
+
+| Function         | Call                                                                     |
+| ---------------- | ------------------------------------------------------------------------ |
+| `get-services`   | `GET` - active services and public shop details                          |
+| `get-slots`      | `GET ?service_id=&date=YYYY-MM-DD` - free start times (ISO, UTC)         |
+| `create-booking` | `POST { service_id, starts_at, customer_name, customer_phone, consent }` |
+| `get-booking`    | `GET ?token=` - the customer's own booking                               |
+| `cancel-booking` | `POST { token }`                                                         |
+
+Errors have the shape `{ "error": { "code", "message", "details"? } }`. The client maps `code` to a
+Romanian text; `message` is for developers. Codes: `invalid_input` (400), `not_found` /
+`service_unavailable` (404), `method_not_allowed` (405), `slot_taken`, `not_cancellable`,
+`cancel_too_late` (409), `rate_limited`, `too_many_bookings` (429), `internal_error` (500).
+
+Limits per IP: 10 requests/minute for `create-booking`, 30 for token endpoints, 120 for reads; at
+most 3 upcoming confirmed bookings per phone number.
 
 ## Layout
 

@@ -11,5 +11,10 @@
     "noEmit": true,
     "skipLibCheck": true
   },
-  "include": ["supabase/functions/_shared/**/*.ts", "supabase/tests/**/*.ts"]
+  "include": [
+    "supabase/functions/_shared/slots.ts",
+    "supabase/functions/_shared/booking-rules.ts",
+    "supabase/functions/_shared/*.test.ts",
+    "supabase/tests/**/*.ts"
+  ]
 }
