@@ -167,7 +167,7 @@ describe('subscribe-push', () => {
     expect(Number(request!.headers.ttl)).toBeGreaterThan(0);
 
     const message = browser.read(request!);
-    expect(message.title).toBe('Frizeria Test: programare confirmată');
+    expect(message.title).toBe('BarberApp: programare confirmată');
     expect(message.body).toMatch(/^Tuns, .+, ora \d{2}:\d{2}\.$/);
     expect(message.url).toBe(`/booking/${booking.token}`);
     // Nothing readable on the wire.
@@ -268,7 +268,7 @@ describe('send-reminders', () => {
 
     const [request] = await waitFor(browsers.due.path);
     const message = browsers.due.read(request!);
-    expect(message.title).toBe('Frizeria Test: îți amintim de programare');
+    expect(message.title).toBe('BarberApp: îți amintim de programare');
     expect(message.url).toBe(`/booking/${due.token}`);
     expect(received).toHaveLength(1);
 

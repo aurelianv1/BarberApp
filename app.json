@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "Frizerie",
+    "name": "BarberApp",
     "slug": "BarberApp",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -23,8 +23,8 @@
       "bundler": "metro",
       "output": "single",
       "lang": "ro",
-      "name": "Frizerie",
-      "shortName": "Frizerie",
+      "name": "BarberApp",
+      "shortName": "BarberApp",
       "themeColor": "#1C1917",
       "backgroundColor": "#F6F4F0"
     },

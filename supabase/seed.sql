@@ -1,8 +1,8 @@
 -- Local development data. TODO: replace with the real shop details (PLAN.md section 12).
 
 update public.settings
-set shop_name = 'Frizeria Test',
-    address = 'Str. Exemplu nr. 1, București',
+set shop_name = 'BarberApp',
+    address = 'Târgoviște',
     phone = '+40700000000';
 
 insert into public.services (name, duration_min, price_ron, sort_order) values

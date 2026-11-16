@@ -6,7 +6,7 @@ import type { ApiErrorCode } from '@/lib/api';
  */
 export const texts = {
   common: {
-    appName: 'Frizerie', // TODO: real shop name (PLAN.md section 12); shown before the API answers
+    appName: 'BarberApp', // shown before the API answers
     loading: 'Se încarcă…',
     retry: 'Încearcă din nou',
     back: 'Înapoi',

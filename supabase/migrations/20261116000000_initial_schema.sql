@@ -253,5 +253,5 @@ create policy push_subscriptions_admin on public.push_subscriptions
 -- ---------------------------------------------------------------------------
 -- Required rows: the app assumes exactly one settings row and at least one staff member.
 -- ---------------------------------------------------------------------------
-insert into public.settings (shop_name) values ('Frizerie'); -- TODO: real shop details (PLAN.md section 12)
+insert into public.settings (shop_name, address) values ('BarberApp', 'Târgoviște'); -- TODO: phone (PLAN.md section 12)
 insert into public.staff (name) values ('Frizer'); -- TODO: real name
