@@ -17,10 +17,13 @@
     "react-native-web": "^0.21.4"
   },
   "devDependencies": {
+    "@types/node": "^26.6.6",
+    "@types/pg": "^8.23.1",
     "@types/react": "~19.3.0",
     "eslint": "^9.39.5",
     "eslint-config-expo": "^58.0.4",
     "eslint-config-prettier": "^10.1.8",
+    "pg": "^8.23.1",
     "prettier": "^3.10.1",
     "typescript": "~6.0.3",
     "vitest": "^5.1.0"
@@ -32,9 +35,10 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "lint": "expo lint",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "tsc --noEmit && tsc -p tsconfig.shared.json",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "test:db": "vitest run --config vitest.db.config.mts"
   },
   "private": true
 }
