@@ -162,6 +162,12 @@ export const texts = {
       cancelConfirm: 'Sigur anulezi programarea?',
       customerLink: 'Deschide pagina clientului',
       notFound: 'Programarea nu există sau a fost ștearsă.',
+      gdprTitle: 'Datele clientului',
+      gdprHint:
+        'Șterge numele, telefonul și notițele din toate programările acestui client și anulează programările lui viitoare. Nu se poate anula.',
+      deleteCustomer: 'Șterge datele clientului',
+      deleteCustomerConfirm: 'Sigur? Nu se poate anula.',
+      customerDeleted: 'Datele clientului au fost șterse.',
     },
     newBooking: {
       title: 'Programare nouă',
@@ -248,6 +254,49 @@ export const texts = {
       network: 'Nu ai conexiune la internet. Verifică și încearcă din nou.',
       unknown: 'A apărut o eroare. Încearcă din nou.',
     } satisfies Record<AdminErrorCode, string>,
+  },
+  install: {
+    title: 'Pune aplicația pe ecranul principal',
+    ios: 'Apasă pe butonul Share din Safari, apoi alege „Add to Home Screen”.',
+    android: 'O deschizi dintr-o atingere, ca pe orice altă aplicație.',
+    installCta: 'Instalează aplicația',
+    dismiss: 'Nu acum',
+  },
+  privacy: {
+    link: 'Politica de confidențialitate',
+    title: 'Politica de confidențialitate',
+    // TODO: fill in the operator's legal details (PLAN.md section 12) and have this text
+    // reviewed before launch. Everything below describes what the app actually does.
+    sections: [
+      {
+        heading: 'Cine prelucrează datele',
+        body: 'Operatorul datelor este salonul la care faci programarea: [NUMELE FIRMEI, CUI, ADRESA]. Ne poți scrie la [EMAIL] sau suna la numărul afișat pe pagina principală.',
+      },
+      {
+        heading: 'Ce date colectăm',
+        body: 'Numele și numărul de telefon pe care le scrii când faci o programare, serviciul ales și data programării. Dacă activezi notificările, păstrăm și adresa tehnică prin care browserul tău primește notificări.',
+      },
+      {
+        heading: 'De ce le folosim',
+        body: 'Doar pentru a gestiona programarea: ca frizerul să știe cine vine și să te poată anunța dacă apare o schimbare, și ca să îți trimitem confirmarea și reminderul, dacă le-ai cerut. Temeiul este acordul tău, dat la programare.',
+      },
+      {
+        heading: 'Cât timp le păstrăm',
+        body: 'Datele tale sunt șterse automat la 12 luni după programare. Poți cere oricând ștergerea lor mai devreme.',
+      },
+      {
+        heading: 'Cine le vede',
+        body: 'Doar personalul salonului. Nu le vindem și nu le folosim pentru reclame. Aplicația este găzduită de furnizori de servicii tehnice (bază de date și găzduire web), care prelucrează datele doar în numele nostru.',
+      },
+      {
+        heading: 'Ce se păstrează pe telefonul tău',
+        body: 'Browserul reține linkul programărilor făcute de pe acest dispozitiv, ca să le găsești ușor când revii. Nu folosim cookie-uri de urmărire.',
+      },
+      {
+        heading: 'Drepturile tale',
+        body: 'Poți cere să vezi, să corectezi sau să ștergi datele tale și îți poți retrage acordul oricând, contactând salonul. Dacă ești nemulțumit de răspuns, te poți adresa Autorității Naționale de Supraveghere a Prelucrării Datelor cu Caracter Personal (ANSPDCP).',
+      },
+    ],
   },
   errors: {
     network_error: 'Nu ai conexiune la internet. Verifică și încearcă din nou.',

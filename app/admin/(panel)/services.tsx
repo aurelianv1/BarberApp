@@ -1,4 +1,4 @@
-import { Stack } from 'expo-router';
+import { PageTitle } from '@/ui/PageTitle';
 import { useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
@@ -32,7 +32,7 @@ export default function ServicesScreen() {
 
   return (
     <Screen wide>
-      <Stack.Screen options={{ title: `${t.title} · ${texts.admin.title}` }} />
+      <PageTitle title={`${t.title} · ${texts.admin.title}`} />
       <Toolbar>
         <Title>{t.title}</Title>
         {editing === null ? (

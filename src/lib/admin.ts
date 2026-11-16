@@ -70,11 +70,12 @@ export interface Booking {
   source: 'online' | 'admin';
   cancel_token: string;
   created_at: string;
+  anonymized_at: string | null;
   services: { name: string; duration_min: number; price_ron: number };
 }
 
 const BOOKING_COLUMNS =
-  'id, starts_at, ends_at, status, customer_name, customer_phone, notes, source, cancel_token, created_at, services (name, duration_min, price_ron)';
+  'id, starts_at, ends_at, status, customer_name, customer_phone, notes, source, cancel_token, created_at, anonymized_at, services (name, duration_min, price_ron)';
 
 // --- Session ---------------------------------------------------------------
 
@@ -284,6 +285,16 @@ export async function createBooking(input: {
     .single();
   if (error) fail(error);
   return data.id as string;
+}
+
+/**
+ * GDPR erasure: removes the customer's name, phone and notes from every booking made with the
+ * same phone number and cancels their upcoming ones. Returns how many bookings were changed.
+ */
+export async function deleteCustomer(bookingId: string): Promise<number> {
+  const { data, error } = await supabase.rpc('delete_customer', { p_booking_id: bookingId });
+  if (error) fail(error);
+  return data as number;
 }
 
 // --- Push for the barber's device -------------------------------------------

@@ -245,6 +245,138 @@ describe('access control', () => {
   });
 });
 
+describe('GDPR', () => {
+  const insertAt = async (startsAt: string, phone: string | null, source = 'online') =>
+    (
+      await a.query(
+        `insert into public.bookings
+           (staff_id, service_id, starts_at, ends_at, customer_name, customer_phone, cancel_token,
+            notes, source)
+         values ($1, $2, $3::timestamptz, $3::timestamptz + interval '30 minutes', 'Ana Test', $4,
+                 $5, 'db-test', $6)
+         returning id, cancel_token`,
+        [staffId, serviceId, startsAt, phone, token(), source],
+      )
+    ).rows[0] as { id: string; cancel_token: string };
+
+  const read = async (id: string) =>
+    (
+      await a.query(
+        `select customer_name, customer_phone, notes, status, cancel_token,
+                anonymized_at is not null as anonymized
+         from public.bookings where id = $1`,
+        [id],
+      )
+    ).rows[0];
+
+  // Anonymized rows lose the 'db-test' note, so they are removed here by id.
+  const created: string[] = [];
+  const track = <T extends { id: string }>(row: T) => (created.push(row.id), row);
+  afterAll(async () => {
+    await a.query('delete from public.bookings where id = any($1)', [created]);
+  });
+
+  it('anonymizes bookings older than the retention period and leaves recent ones alone', async () => {
+    const old = track(await insertAt('2020-03-01T10:00:00Z', '+40700000091'));
+    const recent = track(
+      await insertAt(new Date(Date.now() - 30 * 86_400_000).toISOString(), '+40700000092'),
+    );
+
+    const { rows } = await a.query('select public.anonymize_old_bookings() as n');
+    expect(rows[0].n).toBeGreaterThanOrEqual(1);
+
+    expect(await read(old.id)).toMatchObject({
+      customer_name: 'Client șters',
+      customer_phone: null,
+      notes: null,
+      anonymized: true,
+    });
+    expect((await read(old.id)).cancel_token).not.toBe(old.cancel_token);
+    expect(await read(recent.id)).toMatchObject({
+      customer_phone: '+40700000092',
+      anonymized: false,
+    });
+
+    // Running again does nothing more.
+    expect((await a.query('select public.anonymize_old_bookings() as n')).rows[0].n).toBe(0);
+  });
+
+  it('is scheduled daily', async () => {
+    const { rows } = await a.query(
+      `select schedule from cron.job where jobname = 'anonymize-old-bookings'`,
+    );
+    expect(rows).toEqual([{ schedule: '43 3 * * *' }]);
+  });
+
+  it('lets an admin delete a customer: all their bookings, future ones cancelled', async () => {
+    const phone = '+40700000093';
+    const past = track(await insertAt('2099-05-01T08:00:00Z', phone));
+    const future = track(await insertAt('2099-05-02T08:00:00Z', phone));
+    const other = track(await insertAt('2099-05-03T08:00:00Z', '+40700000094'));
+    await a.query(`update public.bookings set status = 'completed' where id = $1`, [past.id]);
+
+    const userId = '00000000-0000-0000-0000-0000000000cc';
+    await a.query('begin');
+    await a.query(
+      `insert into auth.users (id, instance_id, aud, role, email)
+       values ($1, '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'gdpr-admin@example.com')`,
+      [userId],
+    );
+    await a.query('insert into public.admins (user_id) values ($1)', [userId]);
+    await a.query('set local role authenticated');
+    await a.query(`select set_config('request.jwt.claims', $1, true)`, [
+      JSON.stringify({ sub: userId, role: 'authenticated' }),
+    ]);
+    const { rows } = await a.query('select public.delete_customer($1) as n', [future.id]);
+    await a.query('reset role');
+    await a.query('delete from public.admins where user_id = $1', [userId]);
+    await a.query('delete from auth.users where id = $1', [userId]);
+    await a.query('commit');
+
+    expect(rows[0].n).toBe(2);
+    expect(await read(past.id)).toMatchObject({ customer_phone: null, status: 'completed' });
+    expect(await read(future.id)).toMatchObject({
+      customer_name: 'Client șters',
+      customer_phone: null,
+      status: 'cancelled',
+    });
+    expect(await read(other.id)).toMatchObject({
+      customer_phone: '+40700000094',
+      anonymized: false,
+    });
+  });
+
+  it('refuses delete_customer to anyone who is not an admin', async () => {
+    const booking = track(await insertAt('2099-05-04T08:00:00Z', '+40700000095'));
+    await a.query('begin');
+    try {
+      await a.query('set local role authenticated');
+      await a.query(
+        `select set_config('request.jwt.claims', '{"sub":"00000000-0000-0000-0000-000000000001","role":"authenticated"}', true)`,
+      );
+      await expect(
+        a.query('select public.delete_customer($1)', [booking.id]),
+      ).rejects.toMatchObject({
+        code: INSUFFICIENT_PRIVILEGE,
+      });
+    } finally {
+      await a.query('rollback');
+    }
+    await a.query('begin');
+    try {
+      await a.query('set local role anon');
+      await expect(
+        a.query('select public.delete_customer($1)', [booking.id]),
+      ).rejects.toMatchObject({
+        code: INSUFFICIENT_PRIVILEGE,
+      });
+    } finally {
+      await a.query('rollback');
+    }
+    expect(await read(booking.id)).toMatchObject({ customer_phone: '+40700000095' });
+  });
+});
+
 describe('check_rate_limit', () => {
   it('allows up to the limit within a window, then refuses', async () => {
     const key = `db-test:${token()}`;

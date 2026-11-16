@@ -1,8 +1,10 @@
-import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
+import { PageTitle } from '@/ui/PageTitle';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useState } from 'react';
 import { Linking } from 'react-native';
 
 import {
+  deleteCustomer,
   getBooking,
   setBookingNotes,
   setBookingStatus,
@@ -15,6 +17,7 @@ import { useAdminData, useShop } from '@/lib/useAdminData';
 import { adminErrorText, texts } from '@/texts/ro';
 import { ConfirmButton, StatusBadge } from '@/ui/admin';
 import {
+  Body,
   Button,
   Card,
   ErrorState,
@@ -83,11 +86,11 @@ function Details({
   onBack: () => void;
 }) {
   const [notes, setNotes] = useState(booking.notes ?? '');
-  const [busy, setBusy] = useState<BookingStatus | 'notes' | null>(null);
+  const [busy, setBusy] = useState<BookingStatus | 'notes' | 'delete' | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
 
-  const run = async (what: BookingStatus | 'notes', action: () => Promise<void>) => {
+  const run = async (what: BookingStatus | 'notes' | 'delete', action: () => Promise<void>) => {
     setBusy(what);
     setError(null);
     setSaved(false);
@@ -104,7 +107,7 @@ function Details({
 
   return (
     <Screen wide>
-      <Stack.Screen options={{ title: `${booking.customer_name} · ${texts.admin.title}` }} />
+      <PageTitle title={`${booking.customer_name} · ${texts.admin.title}`} />
       <Button label={`‹ ${texts.common.back}`} variant="link" onPress={onBack} />
       <Title>{booking.customer_name}</Title>
 
@@ -200,6 +203,26 @@ function Details({
         />
         {saved ? <Notice tone="success">{texts.admin.saved}</Notice> : null}
       </Card>
+
+      {booking.anonymized_at ? (
+        <Notice tone="info">{texts.admin.booking.customerDeleted}</Notice>
+      ) : (
+        <Card>
+          <Heading>{texts.admin.booking.gdprTitle}</Heading>
+          <Body muted>{texts.admin.booking.gdprHint}</Body>
+          <ConfirmButton
+            label={texts.admin.booking.deleteCustomer}
+            confirmLabel={texts.admin.booking.deleteCustomerConfirm}
+            busy={busy === 'delete'}
+            testID="delete-customer"
+            onConfirm={() =>
+              run('delete', async () => {
+                await deleteCustomer(booking.id);
+              })
+            }
+          />
+        </Card>
+      )}
     </Screen>
   );
 }

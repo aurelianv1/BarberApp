@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "BarberApp",
+    "name": "Frizerie",
     "slug": "BarberApp",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -21,7 +21,12 @@
     "web": {
       "favicon": "./assets/favicon.png",
       "bundler": "metro",
-      "output": "single"
+      "output": "single",
+      "lang": "ro",
+      "name": "Frizerie",
+      "shortName": "Frizerie",
+      "themeColor": "#1C1917",
+      "backgroundColor": "#F6F4F0"
     },
     "plugins": ["expo-router"],
     "scheme": "barberapp",

@@ -1,4 +1,5 @@
-import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
+import { PageTitle } from '@/ui/PageTitle';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useState } from 'react';
 import { View } from 'react-native';
 
@@ -176,7 +177,7 @@ function Form({
         />
       }
     >
-      <Stack.Screen options={{ title: `${texts.admin.newBooking.title} · ${texts.admin.title}` }} />
+      <PageTitle title={`${texts.admin.newBooking.title} · ${texts.admin.title}`} />
       <Button
         label={`‹ ${texts.common.back}`}
         variant="link"

@@ -1,4 +1,5 @@
-import { Stack, useRouter } from 'expo-router';
+import { PageTitle } from '@/ui/PageTitle';
+import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { View } from 'react-native';
 
@@ -63,7 +64,7 @@ export default function SettingsScreen() {
 
   return (
     <Screen wide>
-      <Stack.Screen options={{ title: `${t.title} · ${texts.admin.title}` }} />
+      <PageTitle title={`${t.title} · ${texts.admin.title}`} />
       <Title>{t.title}</Title>
       <SettingsForm settings={shop.data.settings} onSaved={shop.reload} />
       <PushSection />

@@ -1,4 +1,5 @@
-import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
+import { PageTitle } from '@/ui/PageTitle';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 
@@ -82,7 +83,7 @@ function StepHeader({ step, title }: { step: number; title: string }) {
   const router = useRouter();
   return (
     <View style={styles.header}>
-      <Stack.Screen options={{ title: `${title} · ${texts.book.title}` }} />
+      <PageTitle title={`${title} · ${texts.book.title}`} />
       <Button
         label={`‹ ${texts.common.back}`}
         variant="link"
@@ -386,6 +387,8 @@ function DetailsStep({
         error={showErrors ? consentError : null}
         testID="consent-checkbox"
       />
+
+      <Button label={texts.privacy.link} variant="link" onPress={() => router.push('/privacy')} />
 
       {/* Honeypot: invisible to people and to screen readers; bots that fill it are rejected. */}
       <View style={styles.honeypot} aria-hidden>

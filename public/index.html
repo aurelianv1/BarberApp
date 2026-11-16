@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="ro">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>%WEB_TITLE%</title>
+    <meta name="description" content="Programări online la frizerie." />
+
+    <!-- Booking links contain a secret token: never send the page address to other sites. -->
+    <meta name="referrer" content="no-referrer" />
+
+    <!-- PWA -->
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="theme-color" content="#1C1917" />
+    <link rel="icon" type="image/png" href="/icons/favicon.png" />
+
+    <!-- iOS: Add to Home Screen -->
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="Frizerie" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+
+    <!-- The `react-native-web` recommended style reset: https://necolas.github.io/react-native-web/docs/setup/#root-element -->
+    <style id="expo-reset">
+      /* These styles make the body full-height */
+      html,
+      body {
+        height: 100%;
+      }
+      /* These styles disable body scrolling if you are using <ScrollView> */
+      body {
+        overflow: hidden;
+        background-color: #f6f4f0;
+      }
+      /* These styles make the root element full-height */
+      #root {
+        display: flex;
+        height: 100%;
+        flex: 1;
+      }
+    </style>
+  </head>
+
+  <body>
+    <noscript>Această aplicație are nevoie de JavaScript ca să funcționeze.</noscript>
+    <div id="root"></div>
+  </body>
+</html>

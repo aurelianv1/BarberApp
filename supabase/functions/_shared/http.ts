@@ -28,18 +28,38 @@ export class ApiError extends Error {
   }
 }
 
-// TODO(phase 6): restrict to the production origin once the domain is known.
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
+const CORS_BASE = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
   'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+  Vary: 'Origin',
 };
 
-export function json(body: unknown, status = 200): Response {
+/**
+ * CORS headers for a request. With the ALLOWED_ORIGINS secret set (comma-separated, e.g.
+ * "https://example.ro,https://www.example.ro") only those sites may call the API from a
+ * browser. Without it (local development) every origin is allowed.
+ */
+export function corsHeaders(req: Request): Record<string, string> {
+  const allowed = (Deno.env.get('ALLOWED_ORIGINS') ?? '')
+    .split(',')
+    .map((origin) => origin.trim())
+    .filter(Boolean);
+  if (allowed.length === 0) return { ...CORS_BASE, 'Access-Control-Allow-Origin': '*' };
+
+  const origin = req.headers.get('origin') ?? '';
+  return {
+    ...CORS_BASE,
+    // A site that is not on the list gets the first allowed origin back, which its browser
+    // will refuse.
+    'Access-Control-Allow-Origin': allowed.includes(origin) ? origin : allowed[0]!,
+  };
+}
+
+export function json(body: unknown, status = 200, cors: Record<string, string> = {}): Response {
   return new Response(JSON.stringify(body), {
     status,
     headers: {
-      ...corsHeaders,
+      ...cors,
       'Content-Type': 'application/json; charset=utf-8',
       // Availability and booking data must never be cached.
       'Cache-Control': 'no-store',
@@ -112,7 +132,8 @@ type Handler = (ctx: { req: Request; url: URL; db: SupabaseClient }) => Promise<
 /** Wraps a function with CORS, method check, rate limiting and uniform error responses. */
 export function serve(options: HandlerOptions, handler: Handler): void {
   Deno.serve(async (req) => {
-    if (req.method === 'OPTIONS') return new Response(null, { status: 204, headers: corsHeaders });
+    const cors = corsHeaders(req);
+    if (req.method === 'OPTIONS') return new Response(null, { status: 204, headers: cors });
 
     try {
       if (req.method !== options.method) {
@@ -120,16 +141,17 @@ export function serve(options: HandlerOptions, handler: Handler): void {
       }
       const db = adminClient();
       await enforceRateLimit(db, req, options.rateLimit);
-      return json(await handler({ req, url: new URL(req.url), db }));
+      return json(await handler({ req, url: new URL(req.url), db }), 200, cors);
     } catch (error) {
       if (error instanceof ApiError) {
         return json(
           { error: { code: error.code, message: error.message, details: error.details } },
           error.status,
+          cors,
         );
       }
       console.error('Unhandled error', error);
-      return json({ error: { code: 'internal_error', message: 'Internal error' } }, 500);
+      return json({ error: { code: 'internal_error', message: 'Internal error' } }, 500, cors);
     }
   });
 }

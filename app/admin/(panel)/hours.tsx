@@ -1,4 +1,4 @@
-import { Stack } from 'expo-router';
+import { PageTitle } from '@/ui/PageTitle';
 import { useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
@@ -61,7 +61,7 @@ export default function HoursScreen() {
   }
   return (
     <Screen wide>
-      <Stack.Screen options={{ title: `${t.title} · ${texts.admin.title}` }} />
+      <PageTitle title={`${t.title} · ${texts.admin.title}`} />
       <Title>{t.title}</Title>
       <WeeklyHours staffId={shop.data.staffId} />
       <Title>{t.timeOffTitle}</Title>

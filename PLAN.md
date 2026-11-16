@@ -209,3 +209,5 @@ Nu există interfață generică de notificare; codul de push se scrie direct. T
 **Faza 4, stare:** implementată. Push-ul pentru frizer se trimite deja de pe server; abonarea dispozitivului de admin se face din panoul de admin (Faza 5).
 
 **Faza 5, stare:** implementată. Programările adăugate de frizer pot fi fără telefon. Contul de admin se creează cu `npm run admin:create`; înregistrarea publică este dezactivată.
+
+**Faza 6, stare:** implementat tot ce nu depinde de conturile de producție: manifest, iconițe (provizorii), service worker cu pagină offline, tag-uri iOS, invitație de instalare, pagină de confidențialitate, anonimizare automată la 12 luni, ștergerea unui client din panou, CORS configurabil (`ALLOWED_ORIGINS`), `vercel.json`. Rămân: deploy pe hosting și pe proiectul Supabase de producție, domeniul, completarea datelor operatorului în politica de confidențialitate, înlocuirea iconițelor și checklist-ul din secțiunea 11 pe telefoane reale.

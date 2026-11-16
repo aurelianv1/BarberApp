@@ -1,4 +1,5 @@
-import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
+import { PageTitle } from '@/ui/PageTitle';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Pressable, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 
 import { listBookings, type Booking } from '@/lib/admin';
@@ -59,7 +60,7 @@ function Week({ timezone }: { timezone: string }) {
 
   return (
     <Screen wide>
-      <Stack.Screen options={{ title: `${texts.admin.nav.week} · ${texts.admin.title}` }} />
+      <PageTitle title={`${texts.admin.nav.week} · ${texts.admin.title}`} />
       <Title>{texts.admin.hours.timeOffRange(formatDay(first), formatDay(last))}</Title>
       <Toolbar>
         <View style={styles.nav}>

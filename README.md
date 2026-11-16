@@ -110,6 +110,49 @@ select vault.create_secret('<CRON_SECRET>', 'cron_secret');
 Locally these are already set by `supabase/seed.sql` and `supabase/functions/.env` (copy it from
 `supabase/functions/.env.example`).
 
+## PWA
+
+- `public/manifest.json`, icons in `public/icons/` (placeholder artwork: replace with the real
+  logo, keeping the file names and sizes), iOS tags in `public/index.html`.
+- `public/sw.js`: offline page for page loads, cache for the hashed build files and the icons,
+  push notifications. API responses are never cached. Bump `VERSION` in the file when the
+  cached shell files change.
+- The home page invites visitors to install the app: instructions on iPhone (Safari: Share,
+  then "Add to Home Screen"), an install button on Android/Chrome.
+
+## Privacy (GDPR)
+
+- Explicit consent checkbox when booking; privacy policy at `/privacy`. **Before launch, fill in
+  the operator details marked `[...]` in `src/texts/ro.ts` and have the text reviewed.**
+- Customer data is anonymized automatically `settings.data_retention_months` (12) after the
+  appointment, by a daily cron job (`anonymize_old_bookings`).
+- The barber can erase a customer from a booking's page in the admin panel: it clears the name,
+  phone and notes from all bookings with that phone number and cancels upcoming ones.
+- Booking links hold a secret token, so pages are served with `Referrer-Policy: no-referrer`
+  and `/booking/*` and `/admin/*` are marked `noindex`.
+
+## Deployment
+
+1. **Supabase project** (production):
+   ```bash
+   npx supabase link --project-ref <ref>
+   npx supabase db push                       # runs the migrations
+   npx supabase functions deploy              # deploys all Edge Functions
+   npm run vapid:generate
+   npx supabase secrets set CRON_SECRET=<random> VAPID_PUBLIC_KEY=... VAPID_PRIVATE_KEY=... \
+     VAPID_SUBJECT=mailto:<you> ALLOWED_ORIGINS=https://<domain>
+   ```
+   In the dashboard: disable sign-ups (Authentication settings), then in the SQL editor create
+   the two Vault secrets from "Notifications and reminders", and insert the real services and
+   working hours (or add them from the admin panel). Create the admin with `npm run admin:create`.
+2. **Hosting** (Vercel; `vercel.json` holds the SPA rewrite and security headers): set
+   `EXPO_PUBLIC_SUPABASE_URL`, `EXPO_PUBLIC_SUPABASE_ANON_KEY` and `EXPO_PUBLIC_VAPID_PUBLIC_KEY`
+   as environment variables, then deploy. Point the domain at it.
+3. Go through the QA checklist in `PLAN.md` section 11 on a real iPhone and Android phone.
+
+Note: `supabase/config.toml` applies to the local stack; hosted auth settings (sign-ups off,
+password length) are set in the dashboard or with `npx supabase config push`.
+
 ## Layout
 
 ```

@@ -1,3 +1,5 @@
+import { readFileSync } from 'node:fs';
+
 import pg from 'pg';
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 
@@ -293,6 +295,56 @@ describe('get-booking and cancel-booking', () => {
       token,
     ]);
     expect(rows[0].status).toBe('confirmed');
+  });
+});
+
+describe('direct table access with the public key', () => {
+  // The key that ships in the web app. Customers must get nothing from the tables with it.
+  const REST = (process.env.FUNCTIONS_URL ?? 'http://127.0.0.1:54321/functions/v1').replace(
+    '/functions/v1',
+    '/rest/v1',
+  );
+  const anonKey =
+    process.env.ANON_KEY ??
+    readFileSync('.env', 'utf8').match(/^EXPO_PUBLIC_SUPABASE_ANON_KEY=(.+)$/m)?.[1] ??
+    '';
+
+  it.each(['bookings', 'settings', 'services', 'admins', 'push_subscriptions', 'rate_limits'])(
+    'cannot read %s',
+    async (table) => {
+      expect(anonKey).not.toBe('');
+      const response = await fetch(`${REST}/${table}?select=*`, {
+        headers: { apikey: anonKey, Authorization: `Bearer ${anonKey}` },
+      });
+      const body = await response.json();
+      expect(response.ok).toBe(false);
+      expect(Array.isArray(body)).toBe(false);
+    },
+  );
+
+  it('cannot write bookings or call admin functions', async () => {
+    const headers = {
+      apikey: anonKey,
+      Authorization: `Bearer ${anonKey}`,
+      'Content-Type': 'application/json',
+    };
+    const insert = await fetch(`${REST}/bookings`, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({ customer_name: 'x' }),
+    });
+    expect(insert.ok).toBe(false);
+
+    for (const fn of ['delete_customer', 'claim_due_reminders', 'anonymize_old_bookings']) {
+      const call = await fetch(`${REST}/rpc/${fn}`, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify(
+          fn === 'delete_customer' ? { p_booking_id: '00000000-0000-4000-8000-000000000000' } : {},
+        ),
+      });
+      expect(call.ok).toBe(false);
+    }
   });
 });
 

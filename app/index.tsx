@@ -1,4 +1,5 @@
-import { Stack, useFocusEffect, useRouter } from 'expo-router';
+import { PageTitle } from '@/ui/PageTitle';
+import { useFocusEffect, useRouter } from 'expo-router';
 import { useCallback, useState } from 'react';
 import { Linking, Pressable, StyleSheet, Text, View } from 'react-native';
 
@@ -7,6 +8,7 @@ import { formatLongDate, formatPhone, formatPrice, formatTime } from '@/lib/date
 import { listSavedBookings, type SavedBooking } from '@/lib/savedBookings';
 import { useAsync } from '@/lib/useAsync';
 import { errorText, texts } from '@/texts/ro';
+import { InstallHint } from '@/ui/InstallHint';
 import { Body, Button, Card, ErrorState, Heading, Loading, Screen, Title } from '@/ui/components';
 import { colors, font, space } from '@/ui/theme';
 
@@ -47,7 +49,7 @@ export default function HomeScreen() {
         ) : undefined
       }
     >
-      <Stack.Screen options={{ title: shop.name }} />
+      <PageTitle title={shop.name} />
       <View style={styles.header}>
         <Title>{shop.name}</Title>
         {shop.address ? <Body muted>{shop.address}</Body> : null}
@@ -112,6 +114,14 @@ export default function HomeScreen() {
           ))}
         </Card>
       )}
+
+      <InstallHint />
+      <Button
+        label={texts.privacy.link}
+        variant="link"
+        testID="privacy-link"
+        onPress={() => router.push('/privacy')}
+      />
     </Screen>
   );
 }

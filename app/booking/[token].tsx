@@ -1,4 +1,5 @@
-import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
+import { PageTitle } from '@/ui/PageTitle';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
@@ -56,7 +57,7 @@ export default function BookingScreen() {
   if (state.status === 'error') {
     return (
       <Screen>
-        <Stack.Screen options={{ title: texts.booking.title }} />
+        <PageTitle title={texts.booking.title} />
         <Title>{missing ? texts.booking.notFoundTitle : texts.booking.title}</Title>
         {missing ? (
           <>
@@ -99,7 +100,7 @@ export default function BookingScreen() {
 
   return (
     <Screen>
-      <Stack.Screen options={{ title: `${texts.booking.title} · ${shop.name}` }} />
+      <PageTitle title={`${texts.booking.title} · ${shop.name}`} />
       <Title>{texts.booking.title}</Title>
 
       {isNew === '1' && booking.status === 'confirmed' && !updated ? (

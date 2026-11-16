@@ -4,6 +4,7 @@ import { useRef, useState } from 'react';
 import { signIn, toAdminError } from '@/lib/admin';
 import { useSession } from '@/lib/useSession';
 import { adminErrorText, texts } from '@/texts/ro';
+import { PageTitle } from '@/ui/PageTitle';
 import { Button, Field, Loading, Notice, Screen, Title, type TextInputRef } from '@/ui/components';
 
 export default function AdminLoginScreen() {
@@ -44,6 +45,7 @@ export default function AdminLoginScreen() {
 
   return (
     <Screen>
+      <PageTitle title={`${texts.admin.login.title} · ${texts.admin.title}`} />
       <Title>{texts.admin.login.title}</Title>
       {error ? <Notice tone="danger">{error}</Notice> : null}
       <Field

@@ -1,4 +1,5 @@
-import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
+import { PageTitle } from '@/ui/PageTitle';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { listBookings, type Booking } from '@/lib/admin';
@@ -50,7 +51,7 @@ function Agenda({ timezone }: { timezone: string }) {
 
   return (
     <Screen wide>
-      <Stack.Screen options={{ title: `${texts.admin.nav.today} · ${texts.admin.title}` }} />
+      <PageTitle title={`${texts.admin.nav.today} · ${texts.admin.title}`} />
       <Toolbar>
         <Title>{formatDay(date)}</Title>
         <Button
