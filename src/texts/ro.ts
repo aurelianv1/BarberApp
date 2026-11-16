@@ -1,12 +1,96 @@
+import type { ApiErrorCode } from '@/lib/api';
+
 /**
  * All user-facing strings live here (Romanian). Do not hardcode UI text in components.
  */
 export const texts = {
   common: {
-    appName: 'Frizerie', // TODO: real shop name (PLAN.md section 12)
+    appName: 'Frizerie', // TODO: real shop name (PLAN.md section 12); shown before the API answers
     loading: 'Se încarcă…',
+    retry: 'Încearcă din nou',
+    back: 'Înapoi',
+    minutes: (count: number) => `${count} min`,
+    home: 'Pagina principală',
   },
   home: {
-    comingSoon: 'Programările online vor fi disponibile în curând.',
+    bookCta: 'Programează-te',
+    servicesTitle: 'Servicii și prețuri',
+    addressLabel: 'Adresă',
+    phoneLabel: 'Telefon',
+    callLabel: (phone: string) => `Sună la ${phone}`,
   },
+  book: {
+    title: 'Programare',
+    stepOf: (step: number, total: number) => `Pasul ${step} din ${total}`,
+    serviceTitle: 'Alege serviciul',
+    timeTitle: 'Alege ziua și ora',
+    detailsTitle: 'Datele tale',
+    today: 'Azi',
+    tomorrow: 'Mâine',
+    morning: 'Dimineața',
+    afternoon: 'După-amiaza',
+    noSlots: 'Nu mai sunt ore libere în această zi. Alege altă zi.',
+    summaryTitle: 'Programarea ta',
+    changeService: 'Schimbă serviciul',
+    changeTime: 'Schimbă ora',
+    nameLabel: 'Nume',
+    namePlaceholder: 'Ion Popescu',
+    nameError: 'Scrie numele tău (cel puțin 2 litere).',
+    phoneLabel: 'Telefon',
+    phonePlaceholder: '07xx xxx xxx',
+    phoneHint: 'Îl folosim doar dacă trebuie să te anunțăm despre programare.',
+    phoneError: 'Scrie un număr de mobil valid, de forma 07xx xxx xxx.',
+    consent: 'Sunt de acord ca numele și telefonul meu să fie folosite pentru această programare.',
+    consentError: 'Avem nevoie de acordul tău ca să înregistrăm programarea.',
+    submit: 'Confirmă programarea',
+    submitting: 'Se trimite…',
+    slotTaken: 'Ora tocmai a fost ocupată, alege alta.',
+    noServices: 'Momentan nu există servicii disponibile pentru programare online.',
+  },
+  booking: {
+    title: 'Programarea ta',
+    confirmedBanner: 'Programare confirmată',
+    confirmedHint: 'Păstrează linkul acestei pagini: de aici poți vedea sau anula programarea.',
+    status: {
+      confirmed: 'Confirmată',
+      cancelled: 'Anulată',
+      completed: 'Finalizată',
+      no_show: 'Neprezentare',
+    },
+    serviceLabel: 'Serviciu',
+    dateLabel: 'Data',
+    timeLabel: 'Ora',
+    durationLabel: 'Durată',
+    priceLabel: 'Preț',
+    nameLabel: 'Nume',
+    whereLabel: 'Unde',
+    cancel: 'Anulează programarea',
+    cancelConfirmTitle: 'Sigur vrei să anulezi?',
+    cancelConfirmYes: 'Da, anulează',
+    cancelConfirmNo: 'Nu, păstrează',
+    cancelling: 'Se anulează…',
+    cancelUntil: (date: string, time: string) => `Poți anula până ${date}, ora ${time}.`,
+    cancelTooLate: (phone: string) =>
+      `Termenul de anulare a trecut. Dacă nu mai poți ajunge, sună la ${phone}.`,
+    cancelledInfo: 'Programarea a fost anulată.',
+    bookAgain: 'Fă o programare nouă',
+    notFoundTitle: 'Programarea nu a fost găsită',
+    notFoundBody: 'Linkul este greșit sau programarea a fost ștearsă.',
+  },
+  errors: {
+    network_error: 'Nu ai conexiune la internet. Verifică și încearcă din nou.',
+    rate_limited: 'Prea multe încercări. Așteaptă un minut și încearcă din nou.',
+    too_many_bookings:
+      'Ai deja 3 programări active pe acest număr. Anulează una sau sună la salon.',
+    slot_taken: 'Ora tocmai a fost ocupată, alege alta.',
+    service_unavailable: 'Acest serviciu nu mai este disponibil. Alege altul.',
+    invalid_input: 'Verifică datele introduse și încearcă din nou.',
+    not_found: 'Nu am găsit ce căutai.',
+    not_cancellable: 'Această programare nu mai poate fi anulată.',
+    cancel_too_late: 'Termenul de anulare a trecut.',
+    method_not_allowed: 'A apărut o eroare. Încearcă din nou.',
+    internal_error: 'A apărut o eroare. Încearcă din nou.',
+  } satisfies Record<ApiErrorCode, string>,
 } as const;
+
+export const errorText = (code: ApiErrorCode): string => texts.errors[code];
