@@ -1,3 +1,4 @@
+import type { AdminErrorCode } from '@/lib/admin';
 import type { ApiErrorCode } from '@/lib/api';
 
 /**
@@ -95,6 +96,159 @@ export const texts = {
     notFoundTitle: 'Programarea nu a fost găsită',
     notFoundBody: 'Linkul este greșit sau programarea a fost ștearsă.',
   },
+  admin: {
+    title: 'Administrare',
+    nav: {
+      today: 'Agendă',
+      week: 'Săptămână',
+      services: 'Servicii',
+      hours: 'Program',
+      settings: 'Setări',
+    },
+    login: {
+      title: 'Autentificare',
+      email: 'Email',
+      password: 'Parolă',
+      submit: 'Intră în cont',
+      submitting: 'Se verifică…',
+      missing: 'Scrie emailul și parola.',
+    },
+    logout: 'Ieși din cont',
+    refresh: 'Reîmprospătează',
+    save: 'Salvează',
+    saving: 'Se salvează…',
+    saved: 'Salvat.',
+    add: 'Adaugă',
+    edit: 'Modifică',
+    cancelEdit: 'Renunță',
+    remove: 'Șterge',
+    removeConfirm: 'Sigur ștergi?',
+    agenda: {
+      today: 'Azi',
+      previousDay: 'Ziua anterioară',
+      nextDay: 'Ziua următoare',
+      previousWeek: 'Săptămâna anterioară',
+      nextWeek: 'Săptămâna următoare',
+      thisWeek: 'Săptămâna aceasta',
+      newBooking: 'Programare nouă',
+      empty: 'Nicio programare în această zi.',
+      count: (count: number) =>
+        count === 1
+          ? 'O programare'
+          : count < 20
+            ? `${count} programări`
+            : `${count} de programări`,
+      free: 'liber',
+      timeRange: (start: string, end: string) => `${start}–${end}`,
+    },
+    booking: {
+      title: 'Detalii programare',
+      phone: 'Telefon',
+      noPhone: 'fără telefon',
+      call: 'Sună',
+      source: 'Sursă',
+      sourceOnline: 'Online, de către client',
+      sourceAdmin: 'Adăugată de tine',
+      createdAt: 'Creată la',
+      notes: 'Notițe',
+      notesPlaceholder: 'Vizibile doar pentru tine',
+      changeStatus: 'Schimbă statusul',
+      mark: {
+        confirmed: 'Marchează din nou ca confirmată',
+        completed: 'Marchează ca finalizată',
+        no_show: 'Clientul nu a venit',
+        cancelled: 'Anulează programarea',
+      },
+      cancelConfirm: 'Sigur anulezi programarea?',
+      customerLink: 'Deschide pagina clientului',
+      notFound: 'Programarea nu există sau a fost ștearsă.',
+    },
+    newBooking: {
+      title: 'Programare nouă',
+      service: 'Serviciu',
+      date: 'Data',
+      time: 'Ora',
+      pickService: 'Alege un serviciu ca să vezi orele libere.',
+      noSlots: 'Nu sunt ore libere în această zi.',
+      name: 'Numele clientului',
+      phoneOptional: 'Telefon (opțional)',
+      nameError: 'Scrie numele clientului.',
+      phoneError: 'Numărul nu este valid. Lasă câmpul gol dacă nu îl știi.',
+      timeError: 'Alege o oră.',
+      submit: 'Salvează programarea',
+    },
+    services: {
+      title: 'Servicii',
+      new: 'Serviciu nou',
+      name: 'Nume',
+      duration: 'Durată (minute)',
+      price: 'Preț (lei)',
+      order: 'Ordine în listă',
+      active: 'Vizibil pentru clienți',
+      inactive: 'ascuns',
+      nameError: 'Scrie numele serviciului.',
+      durationError: 'Durata trebuie să fie între 5 și 480 de minute.',
+      priceError: 'Scrie un preț valid, de exemplu 50 sau 49,50.',
+      orderError: 'Ordinea trebuie să fie un număr între 0 și 999.',
+      empty: 'Nu ai adăugat încă niciun serviciu.',
+    },
+    hours: {
+      title: 'Program de lucru',
+      closed: 'Închis',
+      from: 'De la',
+      to: 'Până la',
+      addInterval: 'Adaugă interval',
+      errors: {
+        invalid: 'Scrie orele în forma 09:00.',
+        end_before_start: 'Ora de sfârșit trebuie să fie după cea de început.',
+        overlap: 'Intervalul se suprapune cu unul existent.',
+      },
+      timeOffTitle: 'Zile libere și concedii',
+      timeOffEmpty: 'Nu ai zile libere programate.',
+      firstDay: 'Prima zi',
+      lastDay: 'Ultima zi',
+      reason: 'Motiv (opțional)',
+      addTimeOff: 'Adaugă zile libere',
+      timeOffError: 'Alege prima și ultima zi; ultima nu poate fi înaintea primei.',
+      timeOffRange: (first: string, last: string) =>
+        first === last ? first : `${first} – ${last}`,
+      bookingsInRange: (count: number) =>
+        count === 1
+          ? 'Atenție: ai o programare confirmată în această perioadă. Anuleaz-o și anunță clientul.'
+          : `Atenție: ai ${count} programări confirmate în această perioadă. Anulează-le și anunță clienții.`,
+    },
+    settings: {
+      title: 'Setări',
+      shopSection: 'Salon',
+      shopName: 'Numele salonului',
+      address: 'Adresă',
+      phone: 'Telefon',
+      rulesSection: 'Reguli de programare',
+      slotStep: 'Interval între ore (minute)',
+      minNotice: 'Cu cât timp înainte se poate face o programare (minute)',
+      maxAdvance: 'Cu câte zile în avans se poate face o programare',
+      cancelDeadline: 'Clientul poate anula cu cel puțin (minute) înainte',
+      reminderBefore: 'Reminderul se trimite cu (minute) înainte',
+      shopNameError: 'Scrie numele salonului.',
+      phoneError: 'Scrie un număr de mobil valid sau lasă câmpul gol.',
+      numberError: (min: number, max: number) => `Scrie un număr între ${min} și ${max}.`,
+      notifySection: 'Notificări pe acest dispozitiv',
+      notifyHint: 'Primești o notificare la fiecare programare nouă sau anulată de un client.',
+      notifyEnable: 'Activează notificările',
+      notifyDisable: 'Dezactivează notificările',
+      notifyActive: 'Notificările sunt active pe acest dispozitiv.',
+      accountSection: 'Cont',
+    },
+    errors: {
+      slot_taken: 'Intervalul este deja ocupat de altă programare.',
+      not_admin: 'Acest cont nu are drept de administrare.',
+      bad_credentials: 'Email sau parolă greșită.',
+      not_found: 'Nu am găsit ce căutai.',
+      in_use: 'Nu se poate șterge: există programări legate de acest element.',
+      network: 'Nu ai conexiune la internet. Verifică și încearcă din nou.',
+      unknown: 'A apărut o eroare. Încearcă din nou.',
+    } satisfies Record<AdminErrorCode, string>,
+  },
   errors: {
     network_error: 'Nu ai conexiune la internet. Verifică și încearcă din nou.',
     rate_limited: 'Prea multe încercări. Așteaptă un minut și încearcă din nou.',
@@ -112,3 +266,5 @@ export const texts = {
 } as const;
 
 export const errorText = (code: ApiErrorCode): string => texts.errors[code];
+
+export const adminErrorText = (code: AdminErrorCode): string => texts.admin.errors[code];

@@ -1,6 +1,6 @@
 import type { SupabaseClient } from './deps.ts';
 import type { PushMessage } from './texts.ts';
-import { sendPush, type VapidConfig } from './webpush.ts';
+import { isAllowedPushEndpoint, sendPush, type VapidConfig } from './webpush.ts';
 
 interface SubscriptionRow {
   id: string;
@@ -44,6 +44,11 @@ async function sendTo(
 
   const results = await Promise.all(
     subscriptions.map(async (subscription) => {
+      // Rows can also be written by an admin session, so the endpoint is re-checked here.
+      if (!isAllowedPushEndpoint(subscription.endpoint, extraPushHosts())) {
+        console.warn('Push skipped: endpoint is not a known push service');
+        return false;
+      }
       const result = await sendPush(subscription, message, vapid);
       if (!result.ok) {
         console.warn(`Push failed (${result.status}): ${result.error}`);

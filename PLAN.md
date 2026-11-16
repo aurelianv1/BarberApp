@@ -207,3 +207,5 @@ Nu există interfață generică de notificare; codul de push se scrie direct. T
 **Alte precizări:** `web.output` este `"single"` (SPA); service worker-ul se scrie manual, Expo nu generează unul.
 
 **Faza 4, stare:** implementată. Push-ul pentru frizer se trimite deja de pe server; abonarea dispozitivului de admin se face din panoul de admin (Faza 5).
+
+**Faza 5, stare:** implementată. Programările adăugate de frizer pot fi fără telefon. Contul de admin se creează cu `npm run admin:create`; înregistrarea publică este dezactivată.

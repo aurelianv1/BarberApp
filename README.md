@@ -15,9 +15,27 @@ Stack: Expo (web only) + Expo Router + TypeScript, Supabase (Postgres, Auth, Edg
 
 ```bash
 npm install
-cp .env.example .env        # then fill in the anon key printed by `supabase start`
+cp .env.example .env        # then fill in the anon key printed by `npx supabase status`
 npx supabase start          # local Postgres, Auth and Edge Functions
 ```
+
+## Admin account
+
+Public sign-up is disabled (`enable_signup = false`); the barber's account is created from the
+command line and listed in the `admins` table, which is what Row Level Security checks.
+
+```bash
+# Local: take the two values from `npx supabase status`
+SUPABASE_URL=http://127.0.0.1:54321 SUPABASE_SERVICE_ROLE_KEY=... \
+  npm run admin:create -- admin@example.com 'a-long-password'
+```
+
+Then sign in at `/admin/login`. For production use the project's URL and service_role key from
+the Supabase dashboard; the key is only read from the environment for this one command.
+
+The admin panel (`/admin`): day agenda, week view, booking details and status, manual bookings
+(phone number optional), services, working hours, days off, settings, and push notifications
+for the barber's device.
 
 ## Commands
 

@@ -16,11 +16,20 @@ import { texts } from '@/texts/ro';
 
 import { colors, CONTENT_WIDTH, font, radius, space, TOUCH } from './theme';
 
-export function Screen({ children, footer }: { children: ReactNode; footer?: ReactNode }) {
+export function Screen({
+  children,
+  footer,
+  wide,
+}: {
+  children: ReactNode;
+  footer?: ReactNode;
+  /** Admin screens use more of a desktop window. */
+  wide?: boolean;
+}) {
   return (
     <View style={styles.screen}>
       <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled">
-        <View style={styles.column}>{children}</View>
+        <View style={[styles.column, wide && styles.columnWide]}>{children}</View>
       </ScrollView>
       {footer ? (
         <View style={styles.footer}>
@@ -237,6 +246,7 @@ const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.background },
   scroll: { flexGrow: 1, alignItems: 'center', padding: space.lg, paddingBottom: space.xxl },
   column: { width: '100%', maxWidth: CONTENT_WIDTH, gap: space.lg },
+  columnWide: { maxWidth: 1100 },
   footer: {
     alignItems: 'center',
     padding: space.lg,

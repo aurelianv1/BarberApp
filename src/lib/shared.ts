@@ -7,4 +7,9 @@ export {
   normalizeCustomerName,
   normalizeRoPhone,
 } from '../../supabase/functions/_shared/booking-rules';
-export { localDateOf } from '../../supabase/functions/_shared/slots';
+export {
+  computeSlots,
+  localDateOf,
+  zonedTimeToUtcMs,
+  type SlotInput,
+} from '../../supabase/functions/_shared/slots';

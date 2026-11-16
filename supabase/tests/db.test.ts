@@ -148,6 +148,27 @@ describe('booking column checks', () => {
   });
 });
 
+describe('phone number requirement', () => {
+  const insertWithoutPhone = (source: string) =>
+    a.query(
+      `insert into public.bookings
+         (staff_id, service_id, starts_at, ends_at, customer_name, cancel_token, notes, source)
+       values ($1, $2, $3, $4, 'Walk In', $5, 'db-test', $6)`,
+      [staffId, serviceId, T('14:00'), T('14:30'), token(), source],
+    );
+
+  it('lets the barber add a booking without a phone number', async () => {
+    await expect(insertWithoutPhone('admin')).resolves.toBeDefined();
+  });
+
+  it('still requires a phone number for online bookings', async () => {
+    await expect(insertWithoutPhone('online')).rejects.toMatchObject({
+      code: '23514',
+      constraint: 'bookings_phone_required',
+    });
+  });
+});
+
 describe('access control', () => {
   const tables = [
     'admins',

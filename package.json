@@ -4,6 +4,7 @@
   "main": "expo-router/entry",
   "dependencies": {
     "@expo/metro-runtime": "~58.0.17",
+    "@supabase/supabase-js": "^2.119.0",
     "expo": "~58.0.25",
     "expo-constants": "~58.0.16",
     "expo-linking": "~58.0.17",
@@ -42,7 +43,8 @@
     "format:check": "prettier --check .",
     "test:db": "vitest run --config vitest.db.config.mts",
     "typecheck:functions": "DENO_NO_PACKAGE_JSON=1 deno check --no-config supabase/functions/*/index.ts",
-    "vapid:generate": "DENO_NO_PACKAGE_JSON=1 deno run --no-config scripts/generate-vapid-keys.ts"
+    "vapid:generate": "DENO_NO_PACKAGE_JSON=1 deno run --no-config scripts/generate-vapid-keys.ts",
+    "admin:create": "node scripts/create-admin.mjs"
   },
   "private": true
 }
