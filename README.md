@@ -21,15 +21,16 @@ npx supabase start          # local Postgres, Auth and Edge Functions
 
 ## Commands
 
-| Command                 | What it does                                   |
-| ----------------------- | ---------------------------------------------- |
-| `npm run web`           | Start the web app in development               |
-| `npm test`              | Run unit tests (Vitest)                        |
-| `npm run typecheck`     | TypeScript check                               |
-| `npm run lint`          | ESLint                                         |
-| `npm run format`        | Format with Prettier                           |
-| `npm run build:web`     | Export the static web build to `dist/`         |
-| `npx supabase db reset` | Recreate the local DB from migrations and seed |
+| Command                 | What it does                                        |
+| ----------------------- | --------------------------------------------------- |
+| `npm run web`           | Start the web app in development                    |
+| `npm test`              | Run unit tests (Vitest)                             |
+| `npm run test:db`       | Database tests; needs `npx supabase db start` first |
+| `npm run typecheck`     | TypeScript check                                    |
+| `npm run lint`          | ESLint                                              |
+| `npm run format`        | Format with Prettier                                |
+| `npm run build:web`     | Export the static web build to `dist/`              |
+| `npx supabase db reset` | Recreate the local DB from migrations and seed      |
 
 ## Layout
 
