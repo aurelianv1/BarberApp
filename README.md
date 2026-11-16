@@ -145,7 +145,9 @@ Locally these are already set by `supabase/seed.sql` and `supabase/functions/.en
    In the dashboard: disable sign-ups (Authentication settings), then in the SQL editor create
    the two Vault secrets from "Notifications and reminders", and insert the real services and
    working hours (or add them from the admin panel). Create the admin with `npm run admin:create`.
-2. **Hosting** (Vercel; `vercel.json` holds the SPA rewrite and security headers): set
+2. **Hosting**: any static host works. Config is included for Render (`render.yaml`, a
+   Blueprint: New > Blueprint in the dashboard) and Vercel (`vercel.json`); both hold the SPA
+   rewrite and security headers. Set
    `EXPO_PUBLIC_SUPABASE_URL`, `EXPO_PUBLIC_SUPABASE_ANON_KEY` and `EXPO_PUBLIC_VAPID_PUBLIC_KEY`
    as environment variables, then deploy. Point the domain at it.
 3. Go through the QA checklist in `PLAN.md` section 11 on a real iPhone and Android phone.

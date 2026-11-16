@@ -1,0 +1,56 @@
+# Render Blueprint: hosts the web app as a static site. The backend stays on Supabase.
+# In the Render dashboard: New > Blueprint, pick this repository, then fill in the three values
+# marked `sync: false` when asked.
+services:
+  - type: web
+    runtime: static
+    name: barberapp
+    buildCommand: npm ci && npx expo export --platform web
+    staticPublishPath: ./dist
+    envVars:
+      - key: NODE_VERSION
+        value: 22
+      # Public values, compiled into the app at build time.
+      - key: EXPO_PUBLIC_SUPABASE_URL
+        sync: false
+      - key: EXPO_PUBLIC_SUPABASE_ANON_KEY
+        sync: false
+      - key: EXPO_PUBLIC_VAPID_PUBLIC_KEY
+        sync: false
+    routes:
+      # Single-page app: any path that is not a real file gets index.html, so reloading
+      # /booking/<token> or /admin works. Render serves existing files before applying this.
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    headers:
+      - path: /*
+        name: X-Content-Type-Options
+        value: nosniff
+      - path: /*
+        name: X-Frame-Options
+        value: DENY
+      # Booking links hold a secret token: never send the page address to other sites.
+      - path: /*
+        name: Referrer-Policy
+        value: no-referrer
+      - path: /*
+        name: Permissions-Policy
+        value: camera=(), microphone=(), geolocation=()
+      # The service worker must always be fetched fresh, or updates never reach phones.
+      - path: /sw.js
+        name: Cache-Control
+        value: no-cache
+      # Build files have content hashes in their names.
+      - path: /_expo/static/*
+        name: Cache-Control
+        value: public, max-age=31536000, immutable
+      - path: /admin
+        name: X-Robots-Tag
+        value: noindex, nofollow
+      - path: /admin/*
+        name: X-Robots-Tag
+        value: noindex, nofollow
+      - path: /booking/*
+        name: X-Robots-Tag
+        value: noindex, nofollow
