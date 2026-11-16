@@ -1,9 +1,12 @@
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import { api, type BookingView } from '@/lib/api';
+import { buildIcs, downloadIcs, googleCalendarUrl, type CalendarEvent } from '@/lib/calendar';
 import { formatLongDate, formatPhone, formatPrice, formatTime } from '@/lib/datetime';
+import { currentSubscription, pushSupport, subscribeToPush } from '@/lib/push';
+import { forgetBooking, saveBooking } from '@/lib/savedBookings';
 import { toApiError, useAsync } from '@/lib/useAsync';
 import { errorText, texts } from '@/texts/ro';
 import {
@@ -31,6 +34,18 @@ export default function BookingScreen() {
   const [cancelling, setCancelling] = useState(false);
   const [cancelError, setCancelError] = useState<string | null>(null);
 
+  // Keep this browser's list of bookings in step with what the server says.
+  const view = updated ?? state.data;
+  const missing = state.error?.code === 'not_found' || state.error?.code === 'invalid_input';
+  const viewStatus = view?.booking.status;
+  const viewStartsAt = view?.booking.starts_at;
+  useEffect(() => {
+    if (missing) forgetBooking(token);
+    else if (viewStatus === 'confirmed' && viewStartsAt) {
+      saveBooking({ token, startsAt: viewStartsAt });
+    } else if (viewStatus) forgetBooking(token);
+  }, [token, missing, viewStatus, viewStartsAt]);
+
   if (state.status === 'loading') {
     return (
       <Screen>
@@ -39,7 +54,6 @@ export default function BookingScreen() {
     );
   }
   if (state.status === 'error') {
-    const missing = state.error.code === 'not_found' || state.error.code === 'invalid_input';
     return (
       <Screen>
         <Stack.Screen options={{ title: texts.booking.title }} />
@@ -117,6 +131,10 @@ export default function BookingScreen() {
         {shop.phone ? <Body muted>{formatPhone(shop.phone)}</Body> : null}
       </Card>
 
+      {booking.status === 'confirmed' && booking.cancel_blocked_reason !== 'already_started' ? (
+        <Reminders token={token} view={{ booking, shop }} />
+      ) : null}
+
       {cancelError ? <Notice tone="danger">{cancelError}</Notice> : null}
 
       {booking.status === 'cancelled' ? (
@@ -168,6 +186,93 @@ export default function BookingScreen() {
 
       <Button label={texts.common.home} variant="link" onPress={() => router.replace('/')} />
     </Screen>
+  );
+}
+
+/** Ways to remember the booking: calendar event and push notifications. */
+function Reminders({ token, view }: { token: string; view: BookingView }) {
+  const { booking, shop } = view;
+  const [push, setPush] = useState<'idle' | 'working' | 'active' | 'declined' | 'error'>('idle');
+  const support = pushSupport();
+
+  // This browser already allows notifications: attach it to this booking without asking.
+  useEffect(() => {
+    let current = true;
+    (async () => {
+      const subscription = await currentSubscription();
+      if (!subscription) return;
+      await api.subscribePush(token, subscription);
+      if (current) setPush('active');
+    })().catch(() => undefined);
+    return () => {
+      current = false;
+    };
+  }, [token]);
+
+  const enablePush = async () => {
+    setPush('working');
+    try {
+      const subscription = await subscribeToPush();
+      if (!subscription) {
+        setPush('declined');
+        return;
+      }
+      await api.subscribePush(token, subscription);
+      setPush('active');
+    } catch {
+      setPush('error');
+    }
+  };
+
+  const event: CalendarEvent = {
+    uid: `${token.slice(0, 16)}@barberapp`,
+    startsAt: booking.starts_at,
+    endsAt: booking.ends_at,
+    title: texts.booking.calendarEventTitle(booking.service.name, shop.name),
+    location: shop.address,
+    description: texts.booking.calendarDescription,
+    url: `${window.location.origin}/booking/${token}`,
+    alarmsMinutesBefore: [24 * 60, 2 * 60],
+    alarmText: texts.booking.calendarAlarm(shop.name),
+  };
+
+  return (
+    <Card>
+      <Heading>{texts.booking.calendarTitle}</Heading>
+      <Button
+        label={texts.booking.addToCalendar}
+        variant="secondary"
+        testID="add-to-calendar"
+        onPress={() => downloadIcs(buildIcs(event), texts.booking.calendarFileName)}
+      />
+      <Button
+        label={texts.booking.addToGoogle}
+        variant="secondary"
+        testID="add-to-google"
+        onPress={() => window.open(googleCalendarUrl(event), '_blank', 'noopener')}
+      />
+
+      {push === 'active' ? (
+        <Notice tone="success">{texts.booking.notifyActive}</Notice>
+      ) : support === 'available' && push !== 'declined' ? (
+        <>
+          <Button
+            label={push === 'working' ? texts.booking.notifyEnabling : texts.booking.notifyCta}
+            variant="secondary"
+            busy={push === 'working'}
+            testID="enable-push"
+            onPress={enablePush}
+          />
+          <Body muted>
+            {push === 'error' ? texts.booking.notifyError : texts.booking.notifyHint}
+          </Body>
+        </>
+      ) : support === 'blocked' || push === 'declined' ? (
+        <Body muted>{texts.booking.notifyBlocked}</Body>
+      ) : support === 'needs-install' ? (
+        <Body muted>{texts.booking.notifyNeedsInstall}</Body>
+      ) : null}
+    </Card>
   );
 }
 

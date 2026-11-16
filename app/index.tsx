@@ -1,8 +1,10 @@
-import { Stack, useRouter } from 'expo-router';
+import { Stack, useFocusEffect, useRouter } from 'expo-router';
+import { useCallback, useState } from 'react';
 import { Linking, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { api } from '@/lib/api';
-import { formatPhone, formatPrice } from '@/lib/datetime';
+import { formatLongDate, formatPhone, formatPrice, formatTime } from '@/lib/datetime';
+import { listSavedBookings, type SavedBooking } from '@/lib/savedBookings';
 import { useAsync } from '@/lib/useAsync';
 import { errorText, texts } from '@/texts/ro';
 import { Body, Button, Card, ErrorState, Heading, Loading, Screen, Title } from '@/ui/components';
@@ -11,6 +13,10 @@ import { colors, font, space } from '@/ui/theme';
 export default function HomeScreen() {
   const router = useRouter();
   const state = useAsync(api.getServices, 'services');
+
+  // Bookings made from this browser; re-read whenever the screen comes back into view.
+  const [saved, setSaved] = useState<SavedBooking[]>([]);
+  useFocusEffect(useCallback(() => setSaved(listSavedBookings()), []));
 
   if (state.status === 'loading') {
     return (
@@ -56,6 +62,30 @@ export default function HomeScreen() {
           </Text>
         ) : null}
       </View>
+
+      {saved.length > 0 ? (
+        <>
+          <Heading>{texts.home.yourBookings}</Heading>
+          {saved.map((booking) => (
+            <Card key={booking.token}>
+              <Text style={styles.itemName}>
+                {texts.home.bookingAt(
+                  formatLongDate(booking.startsAt, shop.timezone),
+                  formatTime(booking.startsAt, shop.timezone),
+                )}
+              </Text>
+              <Button
+                label={texts.home.viewBooking}
+                variant="secondary"
+                testID="saved-booking"
+                onPress={() =>
+                  router.push({ pathname: '/booking/[token]', params: { token: booking.token } })
+                }
+              />
+            </Card>
+          ))}
+        </>
+      ) : null}
 
       <Heading>{texts.home.servicesTitle}</Heading>
       {services.length === 0 ? (

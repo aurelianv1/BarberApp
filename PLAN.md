@@ -205,3 +205,5 @@ Nu există interfață generică de notificare; codul de push se scrie direct. T
 **Faza 4** devine „Notificări și remindere": `.ics` / Google Calendar, salvare în browser, web push (client și frizer), `send-reminders` cu Cron. *Criteriu:* reminderul se trimite o singură dată.
 
 **Alte precizări:** `web.output` este `"single"` (SPA); service worker-ul se scrie manual, Expo nu generează unul.
+
+**Faza 4, stare:** implementată. Push-ul pentru frizer se trimite deja de pe server; abonarea dispozitivului de admin se face din panoul de admin (Faza 5).

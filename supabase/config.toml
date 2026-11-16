@@ -444,3 +444,10 @@ verify_jwt = false
 
 [functions.cancel-booking]
 verify_jwt = false
+
+[functions.subscribe-push]
+verify_jwt = false
+
+# Called by pg_cron; protected by the x-cron-secret header instead of a JWT.
+[functions.send-reminders]
+verify_jwt = false

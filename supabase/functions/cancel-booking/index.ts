@@ -3,6 +3,8 @@ import { canCancel } from '../_shared/booking-rules.ts';
 import { loadBookingByToken, publicBooking, Token } from '../_shared/booking-view.ts';
 import { z } from '../_shared/deps.ts';
 import { ApiError, parse, readJson, serve } from '../_shared/http.ts';
+import { inBackground, notifyAdmins } from '../_shared/notify.ts';
+import { pushTexts } from '../_shared/texts.ts';
 
 const Body = z.object({ token: Token });
 
@@ -40,6 +42,18 @@ serve(
     if (updated.data.length === 0) {
       throw new ApiError(409, 'not_cancellable', 'Booking is no longer confirmed');
     }
+
+    inBackground(
+      notifyAdmins(
+        db,
+        pushTexts.adminCancelled({
+          customerName: booking.customer_name,
+          serviceName: booking.services.name,
+          startsAt: booking.starts_at,
+          timezone: settings.timezone,
+        }),
+      ),
+    );
 
     return publicBooking({ ...booking, status: 'cancelled' }, settings, now);
   },

@@ -3,7 +3,7 @@
     "target": "ES2022",
     "module": "ESNext",
     "moduleResolution": "bundler",
-    "lib": ["ES2023"],
+    "lib": ["ES2023", "DOM"],
     "types": ["node"],
     "strict": true,
     "noUncheckedIndexedAccess": true,
@@ -14,7 +14,10 @@
   "include": [
     "supabase/functions/_shared/slots.ts",
     "supabase/functions/_shared/booking-rules.ts",
+    "supabase/functions/_shared/webpush.ts",
+    "supabase/functions/_shared/texts.ts",
     "supabase/functions/_shared/*.test.ts",
-    "supabase/tests/**/*.ts"
+    "supabase/tests/**/*.ts",
+    "scripts/*.ts"
   ]
 }

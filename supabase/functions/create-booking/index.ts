@@ -11,7 +11,9 @@ import {
 } from '../_shared/booking-rules.ts';
 import { z } from '../_shared/deps.ts';
 import { ApiError, parse, readJson, serve } from '../_shared/http.ts';
+import { inBackground, notifyAdmins } from '../_shared/notify.ts';
 import { localDateOf } from '../_shared/slots.ts';
+import { pushTexts } from '../_shared/texts.ts';
 
 const EXCLUSION_VIOLATION = '23P01';
 
@@ -107,6 +109,18 @@ serve(
       }
       throw inserted.error;
     }
+
+    inBackground(
+      notifyAdmins(
+        db,
+        pushTexts.adminNewBooking({
+          customerName: body.customer_name,
+          serviceName: service.name,
+          startsAt: startsAt.toISOString(),
+          timezone: settings.timezone,
+        }),
+      ),
+    );
 
     return {
       cancel_token: inserted.data.cancel_token,

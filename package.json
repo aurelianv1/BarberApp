@@ -24,6 +24,7 @@
     "eslint": "^9.39.5",
     "eslint-config-expo": "^58.0.4",
     "eslint-config-prettier": "^10.1.8",
+    "http_ece": "^1.2.1",
     "pg": "^8.23.1",
     "prettier": "^3.10.1",
     "typescript": "~6.0.3",
@@ -40,7 +41,8 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "test:db": "vitest run --config vitest.db.config.mts",
-    "typecheck:functions": "DENO_NO_PACKAGE_JSON=1 deno check --no-config supabase/functions/*/index.ts"
+    "typecheck:functions": "DENO_NO_PACKAGE_JSON=1 deno check --no-config supabase/functions/*/index.ts",
+    "vapid:generate": "DENO_NO_PACKAGE_JSON=1 deno run --no-config scripts/generate-vapid-keys.ts"
   },
   "private": true
 }

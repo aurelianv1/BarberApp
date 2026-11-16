@@ -21,3 +21,8 @@ cross join (values ('09:00'::time, '13:00'::time), ('14:00'::time, '18:00'::time
 
 insert into public.working_hours (staff_id, weekday, start_time, end_time)
 select s.id, 6, '09:00', '14:00' from public.staff s;
+
+-- Local cron -> Edge Function wiring (see the reminders migration). Kong is the local API
+-- gateway inside the Docker network; the secret matches supabase/functions/.env.
+select vault.create_secret('http://kong:8000/functions/v1', 'functions_base_url');
+select vault.create_secret('local-cron-secret', 'cron_secret');

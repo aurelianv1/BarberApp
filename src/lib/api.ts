@@ -114,4 +114,9 @@ export const api = {
     request<BookingView>(`get-booking?token=${encodeURIComponent(token)}`),
 
   cancelBooking: (token: string) => post<BookingView>('cancel-booking', { token }),
+
+  subscribePush: (
+    token: string,
+    subscription: { endpoint: string; keys: { p256dh: string; auth: string } },
+  ) => post<{ subscribed: boolean; delivered: boolean }>('subscribe-push', { token, subscription }),
 };
